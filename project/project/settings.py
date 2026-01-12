@@ -1,6 +1,6 @@
 from pathlib import Path
 from oscar.defaults import *
-
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -109,7 +109,19 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-HAYSTACK_CONNECTIONS = {'default': {'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',},}
+# для разработки индексация/ потом нужен другой
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': os.path.join(BASE_DIR, 'whoosh_index'),
+        'INCLUDE_SPELLING': True,
+    },
+}
+
+# Автоматическое обновление индекса при сохранении
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
+# HAYSTACK_CONNECTIONS = {'default': {'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',},}
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
@@ -125,6 +137,19 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
+MEDIA_URL = '/media/'
+
+# Путь к медиафайлам на диске
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Настройки Oscar для изображений
+# OSCAR_MISSING_IMAGE_URL = MEDIA_URL + 'image_not_found.jpg'
+OSCAR_HIDDEN_FEATURES = []
+
+# Разрешенные форматы изображений
+OSCAR_IMAGE_FOLDER = 'products/images/'
+OSCAR_PROMOTION_FOLDER = 'promotions/'
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
